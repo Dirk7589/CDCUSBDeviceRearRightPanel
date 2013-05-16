@@ -108,6 +108,14 @@
     /** SWITCH *********************************************************/
     #define INU_SWITCH PORTBbits.RB2
     #define INU_HEATER_SWITCH PORTBbits.RB3
+    #define LWS_POWER_SWITCH PORTCbits.RC0
+    #define CM_POWER_SWITCH PORTCbits.RC1
+    #define CM_TEST_SWITCH PORTCbits.RC2
+
+    #define REAR_LIGHT_SWITCH PORTCbits.RC3
+    #define HYDR_SWITCH PORTCbits.RC4
+    #define EKRAN_SWITCH PORTCbits.RC5
+
     /** Potentiometers *************************************************/
     #define BLUE_KNOB 0
     #define ADI_KNOB 1
@@ -126,5 +134,15 @@
         char b5;
     }buttonState;
 
-
+    typedef struct
+    {
+        char s1;
+        char s2;
+        char s3;
+        char s4;
+        char s5;
+        char s6;
+        char s7;
+        char s8;
+    }switchState;
 #endif  //HARDWARE_PROFILE_PIC24FJ64GB004_PIM_H
