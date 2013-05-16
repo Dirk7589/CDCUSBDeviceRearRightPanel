@@ -28,7 +28,7 @@
 #include "rotary.h"
 
 /**Configuration Bits*/
-#if defined(__PIC24FJ64GB002__)
+#if defined(__PIC24FJ64GB004__)
         _CONFIG1(WDTPS_PS1 & FWPSA_PR32 & WINDIS_OFF & FWDTEN_OFF & ICS_PGx1 & GWRP_OFF & GCP_OFF & JTAGEN_OFF)
         _CONFIG2(POSCMOD_NONE & I2C1SEL_PRI & IOL1WAY_OFF & OSCIOFNC_ON & FCKSM_CSDCMD & FNOSC_FRCPLL & PLL96MHZ_ON & PLLDIV_NODIV & IESO_OFF)
         _CONFIG3(WPFP_WPFP0 & SOSCSEL_SOSC & WUTSEL_LEG & WPDIS_WPDIS & WPCFG_WPCFGDIS & WPEND_WPENDMEM)
@@ -40,10 +40,15 @@
 /** Global Variables ********************************************************/
 char USB_In_Buffer[64];
 char USB_Out_Buffer[64];
-struct rotaryHardwareState encoder1;
+buttonState buttons;
+
 /** P R I V A T E  P R O T O T Y P E S ***************************************/
 static void InitializeSystem(void);
 void ProcessIO(void);
+void readButtons(void);
+void readSwitches(void);
+void setLEDs(void);
+void readPOTs(void);
 void initADC(UINT port);
 void useADC(UINT *buffer, UINT port);
 void USBDeviceTasks(void);
@@ -145,20 +150,26 @@ static void InitializeSystem(void)
  */
 void UserInit(void)
 {
-    TRISBbits.TRISB7 = INPUT_PIN;
-    TRISBbits.TRISB8 = INPUT_PIN;
+    /**Buttons Init*/
     TRISBbits.TRISB9 = INPUT_PIN;
+    CNEN2bits.CN21IE = 1;
 
-    CNPU2bits.CN21PUE = 1;
-    CNPU2bits.CN22PUE = 1;
-    CNPU2bits.CN23PUE = 1;
-    
-    int i;
+    TRISCbits.TRISC6 = INPUT_PIN;
+    TRISCbits.TRISC7 = INPUT_PIN;
+    TRISCbits.TRISC8 = INPUT_PIN;
+    TRISCbits.TRISC9 = INPUT_PIN;
+
+    CNEN2bits.CN17IE = 1;
+    CNEN2bits.CN18IE = 1;
+    CNEN2bits.CN19IE = 1;
+    CNEN2bits.CN20IE = 1;
+
+    UINT i;
     for(i=0; i<64; i++)
     {
         USB_In_Buffer[i] = 0;
     }
-    initRotaryStruct(&encoder1);
+
 }
 
 /**
@@ -198,17 +209,13 @@ void initADC(UINT port)
 void ProcessIO(void)
 {   
     BYTE numBytesRead;
-    UINT ADCResult[16];
-
+    
     #if !DEBUG
-    useADC(ADCResult, 0);
 
-    sprintf(USB_In_Buffer, "%d\n\r", ADCResult[0]);
     #endif
 
     #if DEBUG
-    readRotary(&encoder1);
-    sprintf(USB_In_Buffer, "%d\n\r", encoder1.direction);
+    
     #endif
     // User Application USB tasks
     if((USBDeviceState < CONFIGURED_STATE)||(USBSuspendControl==1))
@@ -222,7 +229,7 @@ void ProcessIO(void)
         putUSBUSART(USB_In_Buffer,64);
     }
     CDCTxService();
-}		//end ProcessIO
+}		
 
 /**
  * @brief A function that busy waits while measuring the specified port
@@ -300,6 +307,37 @@ void useADC(UINT *buffer, UINT port)
 
 }
 
+void readButtons(void)
+{
+    if(!LEGT_BUTTON)
+    {
+        buttons.b1 = '1';
+    }
+    if(!REGT_BUTTON)
+    {
+        buttons.b2 = '1';
+    }
+    if(!ENG_VIBE_BUTTON)
+    {
+        buttons.b3 = '1';
+    }
+    if(!CKT_TEST_BUTTON)
+    {
+        buttons.b4 = '1';
+    }
+    if(!LWS_TEST_BUTTON)
+    {
+        buttons.b5 = '1';
+    }
+    else
+    {
+        buttons.b1 = '0';
+        buttons.b2 = '0';
+        buttons.b3 = '0';
+        buttons.b4 = '0';
+        buttons.b5 = '0';
+    }
+}
 // ******************************************************************************************************
 // ************** USB Callback Functions ****************************************************************
 // ******************************************************************************************************
