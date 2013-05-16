@@ -38,9 +38,16 @@
     #error No hardware board defined, see "HardwareProfile.h" and __FILE__
 #endif
 /** Global Variables ********************************************************/
-char USB_In_Buffer[64];
-char USB_Out_Buffer[64];
-buttonState buttons;
+char USB_In_Buffer[64]; /**<Input buffer to send to USB*/
+char USB_Out_Buffer[64];/**<Returned message buffer from USB*/
+
+buttonState buttons; /**<A structure containing the current button state*/
+
+UINT pot0[16]; /**<ADC Values for pot0*/
+UINT pot1[16]; /**<ADC Values for pot1*/
+UINT pot2[16]; /**<ADC Values for pot2*/
+UINT pot3[16]; /**<ADC Values for pot3*/
+
 
 /** P R I V A T E  P R O T O T Y P E S ***************************************/
 static void InitializeSystem(void);
@@ -163,6 +170,16 @@ void UserInit(void)
     CNEN2bits.CN18IE = 1;
     CNEN2bits.CN19IE = 1;
     CNEN2bits.CN20IE = 1;
+
+    /**Switches Init*/
+    TRISBbits.TRISB2 = INPUT_PIN;
+    TRISBbits.TRISB3 = INPUT_PIN;
+
+    CNEN1bits.CN6IE = 1;
+    CNEN1bits.CN7IE = 1;
+
+    /**LED Init*/
+    TRISAbits.TRISA10 = OUTPUT_PIN;
 
     UINT i;
     for(i=0; i<64; i++)
