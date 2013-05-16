@@ -92,13 +92,32 @@
     #define EXPLORER_16
     #define PIC24FJ64GB004_PIM
     #define CLOCK_FREQ 32000000
-    
-    /** LED ************************************************************/
-    
-    /** SWITCH *********************************************************/
-    #define switch0 PORTBbits.RB4
+
     /** I/O pin definitions ********************************************/
     #define INPUT_PIN 1
     #define OUTPUT_PIN 0
+
+    /** Buttons ********************************************************/
+    #define LEGT_BUTTON PORTBbits.RB9 /**<Left EGT Button*/
+    #define REGT_BUTTON PORTCbits.RC6 /**<Right EGT Button*/
+    #define ENG_VIBE_BUTTON PORTCbits.RC7 /**<Engine vibrations test button*/
+    #define CKT_TEST_BUTTON PORTCbits.RC8 /**<Circuit Test button*/
+    #define LWS_TEST_BUTTON PORTCbits.RC9 /**<LWS system test button*/
+    /** LED ************************************************************/
+    
+    /** SWITCH *********************************************************/
+
+    /** Potentiometers *************************************************/
+
+    /** Structure Defines*/
+    typedef struct buttonState
+    {
+        char b1;
+        char b2;
+        char b3;
+        char b4;
+        char b5;
+    };
+
 
 #endif  //HARDWARE_PROFILE_PIC24FJ64GB004_PIM_H
