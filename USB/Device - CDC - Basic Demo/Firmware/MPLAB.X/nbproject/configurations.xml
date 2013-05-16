@@ -1737,7 +1737,7 @@
     <conf name="PIC24FJ64GB004_PIM" type="2">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
-        <targetDevice>PIC24FJ64GB002</targetDevice>
+        <targetDevice>PIC24FJ64GB004</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
