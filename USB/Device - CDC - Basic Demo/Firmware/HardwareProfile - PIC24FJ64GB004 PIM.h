@@ -106,18 +106,25 @@
     /** LED ************************************************************/
     
     /** SWITCH *********************************************************/
-
+    #define INU_SWITCH PORTBbits.RB2
+    #define INU_HEATER_SWITCH PORTBbits.RB3
     /** Potentiometers *************************************************/
+    #define BLUE_KNOB 0
+    #define ADI_KNOB 1
+    #define LEFT_RIGHT_KNOB 2
+    #define REAR_KNOB 3
+    /** LEDS ***********************************************************/
+    #define LWS_LAMP_LED PORTAbits.RA10
 
     /** Structure Defines*/
-    typedef struct buttonState
+    typedef struct 
     {
         char b1;
         char b2;
         char b3;
         char b4;
         char b5;
-    };
+    }buttonState;
 
 
 #endif  //HARDWARE_PROFILE_PIC24FJ64GB004_PIM_H
