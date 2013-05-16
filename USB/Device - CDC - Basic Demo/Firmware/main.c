@@ -13,7 +13,7 @@
 
 /**Defines*/
 #define USE_AND_OR
-#define DEBUG 1
+#define DEBUG 0
 /** INCLUDES *******************************************************/
 #include "./USB/usb.h"
 #include "./USB/usb_function_cdc.h"
@@ -48,6 +48,7 @@ UINT pot1[16]; /**<ADC Values for pot1*/
 UINT pot2[16]; /**<ADC Values for pot2*/
 UINT pot3[16]; /**<ADC Values for pot3*/
 
+switchState switches; /**<A structure containing the current switch state*/
 
 /** P R I V A T E  P R O T O T Y P E S ***************************************/
 static void InitializeSystem(void);
@@ -157,6 +158,7 @@ static void InitializeSystem(void)
  */
 void UserInit(void)
 {
+    UINT i;
     /**Buttons Init*/
     TRISBbits.TRISB9 = INPUT_PIN;
     CNEN2bits.CN21IE = 1;
@@ -174,19 +176,42 @@ void UserInit(void)
     /**Switches Init*/
     TRISBbits.TRISB2 = INPUT_PIN;
     TRISBbits.TRISB3 = INPUT_PIN;
+    TRISCbits.TRISC0 = INPUT_PIN;
+    TRISCbits.TRISC1 = INPUT_PIN;
+    TRISCbits.TRISC2 = INPUT_PIN;
+    TRISCbits.TRISC3 = INPUT_PIN;
+    TRISCbits.TRISC4 = INPUT_PIN;
+    TRISCbits.TRISC5 = INPUT_PIN;
 
     CNEN1bits.CN6IE = 1;
     CNEN1bits.CN7IE = 1;
-
+    CNEN1bits.CN8IE = 1;
+    CNEN1bits.CN9IE = 1;
+    CNEN1bits.CN10IE = 1;
+    CNEN2bits.CN28IE = 1;
+    CNEN2bits.CN25IE = 1;
+    CNEN2bits.CN26IE = 1;
     /**LED Init*/
     TRISAbits.TRISA10 = OUTPUT_PIN;
 
-    UINT i;
+    /**Pot Init*/
+    for(i=0; i<16; i++)
+    {
+        pot0[i] = 0;
+        pot1[i] = 0;
+        pot2[i] = 0;
+        pot3[i] = 0;
+    }
+    initADC(BLUE_KNOB);
+    initADC(ADI_KNOB);
+    initADC(LEFT_RIGHT_KNOB);
+    initADC(REAR_KNOB);
+
+    /**USB Buffer Init*/
     for(i=0; i<64; i++)
     {
         USB_In_Buffer[i] = 0;
     }
-
 }
 
 /**
@@ -229,6 +254,14 @@ void ProcessIO(void)
     
     #if !DEBUG
 
+    readButtons();
+
+    readSwitches();
+
+    readPOTs();
+
+    setLEDs();
+    
     #endif
 
     #if DEBUG
@@ -354,6 +387,93 @@ void readButtons(void)
         buttons.b4 = '0';
         buttons.b5 = '0';
     }
+}
+void readSwitches(void)
+{
+    if(!INU_SWITCH)
+    {
+        switches.s1 = '1';
+    }
+    else
+    {
+        switches.s1 = '0';
+    }
+
+    if(!INU_HEATER_SWITCH)
+    {
+        switches.s2 = '1';
+    }
+    else
+    {
+        switches.s2 = '0';
+    }
+
+    if(!LWS_POWER_SWITCH)
+    {
+        switches.s3 = '1';
+    }
+    else
+    {
+        switches.s3 = '0';
+    }
+
+    if(!CM_POWER_SWITCH)
+    {
+        switches.s4 = '1';
+    }
+    else
+    {
+        switches.s4 = '0';
+    }
+
+    if(!CM_TEST_SWITCH)
+    {
+        switches.s5 = '1';
+    }
+    else
+    {
+        switches.s5 = '0';
+    }
+
+    if(!REAR_LIGHT_SWITCH)
+    {
+        switches.s6 = '1';
+    }
+    else
+    {
+        switches.s6 = '0';
+    }
+
+    if(!HYDR_SWITCH)
+    {
+        switches.s7 = '1';
+    }
+    else
+    {
+        switches.s7 = '0';
+    }
+
+    if(!EKRAN_SWITCH)
+    {
+        switches.s8 = '1';
+    }
+    else
+    {
+        switches.s8 = '0';
+    }
+}
+
+void readPOTs(void)
+{
+    useADC(pot0, BLUE_KNOB);
+    useADC(pot1, ADI_KNOB);
+    useADC(pot2, LEFT_RIGHT_KNOB);
+    useADC(pot3, REAR_KNOB);
+}
+
+void setLEDs(void)
+{
+    LWS_LAMP_LED = 1;
 }
 // ******************************************************************************************************
 // ************** USB Callback Functions ****************************************************************
